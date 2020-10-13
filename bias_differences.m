@@ -66,8 +66,13 @@ end
 
 %% Random Word Pair Subtraction and Comparing Colours to Distributions
 
+% Change this to "randEmotionScore" if you wish to look at valence
+% differences
 randVecs = randGenderScore;
+% change this to "emotionScore" if you wisht o look at valence differences
 coloursToSub = genderScore;
+
+
 pairNum = 100000;
 sampleIdxs = randi([1, pairNum], pairNum, 2);
 vecsToSub = [randVecs(sampleIdxs(:,1)); randVecs(sampleIdxs(:,2))]';
@@ -99,6 +104,9 @@ for i = 1:colourListSize
         end 
     end
 end
+
+%these visualisations are just for easy access to show the significant
+%results
 figure;
 heatmap(colourList, colourList, percentiles);
 figure;
@@ -120,6 +128,8 @@ for i = 1:colourListSize
         PercentileMat(i,j) = min(p1, p2);
     end
 end
+%these visualisations are just for easy access to show the significant
+%results
 figure;
 heatmap(colourList, colourList, SignificantMat);
 figure;
@@ -127,6 +137,7 @@ heatmap(colourList, colourList, PercentileMat);
 
 
 %% Threshold Calculations of Significance
+
 meanThresh = mean(randDiffs);
 stdDevThresh = std(randDiffs);
 minThreshold = meanThresh - 2*stdDevThresh;
