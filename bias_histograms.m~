@@ -389,10 +389,10 @@ plot([-1,1], [emotionMu, emotionMu], "black");
 sigPcy = [5 95];
 emotionPercentile = prctile(randEmotionScore,sigPcy);
 genderPercentile = prctile(randGenderScore,sigPcy);
-plot([-1, 1], [emotionPercentile(1), emotionPercentile(1)], "--b");
-plot([-1, 1], [emotionPercentile(2), emotionPercentile(2)], "--b");
-plot([genderPercentile(1), genderPercentile(1)], [-1, 1], "--b");
-plot([genderPercentile(2), genderPercentile(2)], [-1, 1], "--b");
+plot([emotionPercentile(1), emotionPercentile(1)], [genderPercentile(1),emotionMu + emotionStd*2], "--b");
+plot([emotionPercentile(2), emotionPercentile(2), [genderPercentile(1),emotionMu + emotionStd*2], "--b");
+plot([emotionPercentile(1), emotionPercentile(2)], [genderPercentile(1), genderPercentile(1)], "--b");
+plot([emotionPercentile(1), emotionPercentile(2)], [genderPercentile(2), genderPercentile(2)], "--b");
 for i = colourListSize+1:otherListSize+colourListSize
     plot(genderScore(i), emotionScore(i), 'Marker', 'diamond', 'MarkerSize', 14, 'MarkerFaceColor',  'none', 'MarkerEdgeColor',  'k', 'DisplayName', char(wordList(i)));
     text(genderScore(i)+0.012, emotionScore(i), wordList(i), "FontSize", 12);
@@ -403,8 +403,8 @@ for i = 1:colourListSize
 end
 xlabel("Gender Bias");
 ylabel("Valence Bias");
-xlim([genderMu - genderStd*5, genderMu + genderStd * 5])
-ylim([emotionMu - emotionStd*5, emotionMu + emotionStd * 5])
+xlim([genderMu - genderStd*4, genderMu + genderStd * 4])
+ylim([emotionMu - emotionStd*4, emotionMu + emotionStd * 4])
 %% Squareform Pdist Colours
 scores = emotionScore(1:colourListSize);
 square = squareform(pdist(scores', @distfun));

@@ -68,9 +68,9 @@ end
 
 % Change this to "randEmotionScore" if you wish to look at valence
 % differences
-randVecs = randGenderScore;
+randVecs = randEmotionScore;
 % change this to "emotionScore" if you wisht o look at valence differences
-coloursToSub = genderScore;
+coloursToSub = emotionScore;
 
 
 pairNum = 100000;
@@ -81,8 +81,7 @@ for i = 1:pairNum
     randDiffs(i) = (vecsToSub(i,1) - vecsToSub(i,2));
 end
 sortedDiffs = sort(randDiffs, 'descend');
-twoSD = [5 95];
-percentile = prctile(randDiffs,twoSD);
+
 colourDiffs = [];
 for i = 1:colourListSize
     for j = 1:colourListSize
