@@ -2,6 +2,7 @@
 load fullVectors/glove.6B.300d.mat
 load liwcMeans.mat
 cellfind = @(string)(@(cell_contents)(strcmp(string,cell_contents)));
+sigPcy = [5 95];
 %% Get test words and normalize while assigning colour values for them
 colourList = {'red', 'blue', 'green', 'yellow', 'orange', 'pink', 'brown', 'white', 'black', 'purple', 'grey'};
 colourListSize = length(colourList);
@@ -49,20 +50,6 @@ for i = 1:maxWords
     randSheScore(i) = sheCos;
 end
 
-posMu = mean(randPosScore);
-negMu = mean(randNegScore);
-heMu = mean(randHeScore);
-sheMu = mean(randSheScore);
-emotionMu = mean(randEmotionScore);
-genderMu = mean(randGenderScore);
-
-posStd = std(randPosScore);
-negStd = std(randNegScore);
-heStd = std(randHeScore);
-sheStd = std(randSheScore);
-emotionStd = std(randEmotionScore);
-genderStd = std(randGenderScore);
-
 %% Testing Words for all associations and biases
 emotionScore = [];
 genderScore = [];
@@ -82,10 +69,8 @@ end
 
 %% Visualising results - Gender
 % chosing data set
-mu = genderMu;
-sigma = genderStd;
 score = genderScore;
-histData = randGenderScore;
+histData = randGenderScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -96,12 +81,10 @@ y = pdf(pd, x);
 dx = diff(x(1:2));
 figure;
 bar(x, f/sum(f*dx), 'FaceAlpha', 0.15, 'FaceColor', [0.5, 0.5, 0.5]);
-hold on;
 y = y/sum(y*dx);
-plot(x,y, 'LineWidth', 2.0, 'Color', [0.85 0.325 0.0980]);
 xlim([pd.mu - pd.std *5 pd.mu + pd.std *5])
 
-sigPcy = [5 95];
+
 percentile = prctile(histData,sigPcy);
 hold on;
 impulse = max(y);
@@ -132,10 +115,8 @@ box on;
 
 %% Visualising results - Valence
 % chosing data set
-mu = emotionMu;
-sigma = emotionStd;
 score = emotionScore;
-histData = randEmotionScore;
+histData = randEmotionScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -146,12 +127,9 @@ y = pdf(pd, x);
 dx = diff(x(1:2));
 figure;
 bar(x, f/sum(f*dx), 'FaceAlpha', 0.15, 'FaceColor', [0.5, 0.5, 0.5]);
-hold on;
 y = y/sum(y*dx);
-plot(x,y, 'LineWidth', 2.0, 'Color', [0.85 0.325 0.0980]);
 xlim([pd.mu - pd.std *5 pd.mu + pd.std *5])
 
-sigPcy = [5 95];
 percentile = prctile(histData,sigPcy);
 hold on;
 impulse = max(y);
@@ -181,10 +159,8 @@ xlabel("Bias", "FontSize", 24);
 box on;
 %% Visualising results - He
 % chosing data set
-mu = heMu;
-sigma = heStd;
 score = HeScore;
-histData = randHeScore;
+histData = randHeScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -199,7 +175,6 @@ hold on;
 y = y/sum(y*dx);
 xlim([pd.mu - pd.std *5 pd.mu + pd.std *5])
 
-sigPcy = [5 95];
 percentile = prctile(histData,sigPcy);
 hold on;
 impulse = max(y);
@@ -229,10 +204,8 @@ xlabel("Bias", "FontSize", 24);
 box on;
 %% Visualising results - She
 % chosing data set
-mu = sheMu;
-sigma = sheStd;
 score = SheScore;
-histData = randSheScore;
+histData = randSheScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -248,7 +221,6 @@ y = y/sum(y*dx);
 plot(x,y, 'LineWidth', 2.0, 'Color', [0.85 0.325 0.0980]);
 xlim([pd.mu - pd.std *5 pd.mu + pd.std *5])
 
-sigPcy = [5 95];
 percentile = prctile(histData,sigPcy);
 hold on;
 impulse = max(y);
@@ -279,10 +251,8 @@ box on;
 
 %% Visualising results - Pos
 % chosing data set
-mu = posMu;
-sigma = posStd;
 score = PosScore;
-histData = randPosScore;
+histData = randPosScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -298,7 +268,6 @@ y = y/sum(y*dx);
 plot(x,y, 'LineWidth', 2.0, 'Color', [0.85 0.325 0.0980]);
 xlim([pd.mu - pd.std *5 pd.mu + pd.std *5])
 
-sigPcy = [5 95];
 percentile = prctile(histData,sigPcy);
 hold on;
 impulse = max(y);
@@ -329,10 +298,8 @@ box on;
 
 %% Visualising results - Neg
 % chosing data set
-mu = negMu;
-sigma = negStd;
 score = NegScore;
-histData = randNegScore;
+histData = randNegScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -348,7 +315,6 @@ y = y/sum(y*dx);
 plot(x,y, 'LineWidth', 2.0, 'Color', [0.85 0.325 0.0980]);
 xlim([pd.mu - pd.std *5 pd.mu + pd.std *5])
 
-sigPcy = [5 95];
 percentile = prctile(histData,sigPcy);
 hold on;
 impulse = max(y);
@@ -382,13 +348,12 @@ box on;
 % to the relationship between the two variables
 
 figure;
-plot([genderMu, genderMu], [-1,1], "black");
+plot([0, 0], [-1,1], "black");
 hold on;
-plot([-1,1], [emotionMu, emotionMu], "black");
+plot([-1,1], [0, 0], "black");
 
-sigPcy = [5 95];
-emotionPercentile = prctile(randEmotionScore,sigPcy);
-genderPercentile = prctile(randGenderScore,sigPcy);
+emotionPercentile = prctile(randEmotionScore(1:100000),sigPcy);
+genderPercentile = prctile(randGenderScore(1:100000),sigPcy);
 plot([-1, 1], [emotionPercentile(1), emotionPercentile(1)], "--b");
 plot([-1, 1], [emotionPercentile(2), emotionPercentile(2)], "--b");
 plot([genderPercentile(1), genderPercentile(1)], [-1, 1], "--b");
