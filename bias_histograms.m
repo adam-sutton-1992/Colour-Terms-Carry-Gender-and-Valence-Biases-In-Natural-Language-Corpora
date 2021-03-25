@@ -6,7 +6,7 @@ sigPcy = [5 95];
 %% Get test words and normalize while assigning colour values for them
 colourList = {'red', 'blue', 'green', 'yellow', 'orange', 'pink', 'brown', 'white', 'black', 'purple', 'grey'};
 colourListSize = length(colourList);
-otherWords = {'nun', 'priest', 'life', 'death', 'happy', 'sad', 'night', 'day'};
+otherWords = {'nun', 'priest', 'happy', 'sad'};
 otherListSize = length(otherWords);
 wordList = horzcat(colourList, otherWords);
 wordListSize = length(wordList);
@@ -22,37 +22,43 @@ coloursVals = [[1 0 0];[0 0 1]; [0 1 0]; [1 1 0]; [1 0.647 0]; [1 0.411 0.705];
 %% Finding distributions of n-most occuring words
 
 randomWords = vectors;
-randEmotionScore = [];
-randPosScore = [];
-randNegScore = [];
-randGenderScore = [];
-randHeScore = [];
-randSheScore = [];
+maxWords = length(cellNames);
+sampleSize = 100000;
+allEmotionScore = zeros(1, sampleSize);
+allPosScore = zeros(1, sampleSize);
+allNegScore = zeros(1, sampleSize);
+allGenderScore = zeros(1, sampleSize);
+allHeScore = zeros(1, sampleSize);
+allSheScore = zeros(1, sampleSize);
 % The lower down the list of words a given word
 % is the less it has occured within the 
 % embedding. Using the top 100000 occuring
 % words ensures for well defined words to be 
 % tested. Using all words provides similar
 % results
-maxWords = length(cellNames);
 for i = 1:maxWords
     randomWords(i,:) = randomWords(i,:)/norm(randomWords(i,:));
     posCos = posmean * randomWords(i,:)';
     negCos = negmean * randomWords(i,:)';
-    randEmotionScore(i) = posCos - negCos;
-    randPosScore(i) = posCos;
-    randNegScore(i) = negCos;
+    allEmotionScore(i) = posCos - negCos;
+    allPosScore(i) = posCos;
+    allNegScore(i) = negCos;
     
     heCos = hemean * randomWords(i,:)';
     sheCos = shemean * randomWords(i,:)';
-    randGenderScore(i) = heCos - sheCos;
-    randHeScore(i) = heCos;
-    randSheScore(i) = sheCos;
+    allGenderScore(i) = heCos - sheCos;
+    allHeScore(i) = heCos;
+    allSheScore(i) = sheCos;
 end
 
 %% Testing Words for all associations and biases
-emotionScore = [];
-genderScore = [];
+emotionScore = zeros(1, wordListSize);
+genderScore = zeros(1, wordListSize);
+PosScore = zeros(1, wordListSize);
+NegScore = zeros(1, wordListSize);
+HeScore = zeros(1, wordListSize);
+SheScore = zeros(1, wordListSize);
+
 for i = 1:wordListSize
     posCos = posmean * testVecs(i,:)';
     negCos = negmean * testVecs(i,:)';
@@ -70,7 +76,7 @@ end
 %% Visualising results - Gender
 % chosing data set
 score = genderScore;
-histData = randGenderScore(1:100000);
+histData = allGenderScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -116,7 +122,7 @@ box on;
 %% Visualising results - Valence
 % chosing data set
 score = emotionScore;
-histData = randEmotionScore(1:100000);
+histData = allEmotionScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -160,7 +166,7 @@ box on;
 %% Visualising results - He
 % chosing data set
 score = HeScore;
-histData = randHeScore(1:100000);
+histData = allHeScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -205,7 +211,7 @@ box on;
 %% Visualising results - She
 % chosing data set
 score = SheScore;
-histData = randSheScore(1:100000);
+histData = allSheScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -252,7 +258,7 @@ box on;
 %% Visualising results - Pos
 % chosing data set
 score = PosScore;
-histData = randPosScore(1:100000);
+histData = allPosScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -299,7 +305,7 @@ box on;
 %% Visualising results - Neg
 % chosing data set
 score = NegScore;
-histData = randNegScore(1:100000);
+histData = allNegScore(1:100000);
 
 % calculating pdf
 bins = round(sqrt(length(histData)));
@@ -352,8 +358,8 @@ plot([0, 0], [-1,1], "black");
 hold on;
 plot([-1,1], [0, 0], "black");
 
-emotionPercentile = prctile(randEmotionScore(1:100000),sigPcy);
-genderPercentile = prctile(randGenderScore(1:100000),sigPcy);
+emotionPercentile = prctile(allEmotionScore(1:100000),sigPcy);
+genderPercentile = prctile(allGenderScore(1:100000),sigPcy);
 plot([-1, 1], [emotionPercentile(1), emotionPercentile(1)], "--b");
 plot([-1, 1], [emotionPercentile(2), emotionPercentile(2)], "--b");
 plot([genderPercentile(1), genderPercentile(1)], [-1, 1], "--b");
@@ -370,12 +376,3 @@ xlabel("Gender Bias");
 ylabel("Valence Bias");
 xlim([genderMu - genderStd*5, genderMu + genderStd * 5])
 ylim([emotionMu - emotionStd*5, emotionMu + emotionStd * 5])
-%% Squareform Pdist Colours
-scores = emotionScore(1:colourListSize);
-square = squareform(pdist(scores', @distfun));
-words = zeros(colourListSize, colourListSize);
-for i = 1:colourListSize
-    for j = 1:colourListSize
-        words(i,j) = scores(i) - scores(j);
-    end
-end
